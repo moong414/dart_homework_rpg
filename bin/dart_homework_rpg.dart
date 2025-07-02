@@ -137,6 +137,11 @@ abstract class Unit {
   int attack;
   int defense;
   Unit(this.name, this.health, this.attack, this.defense);
+
+  //캐릭터 상태출력메서드
+  showStatus() {
+    print('$name - 체력: $health, 공격력: $attack, 방어력$defense');
+  }
 }
 
 //Character클래스
@@ -157,11 +162,6 @@ class Character extends Unit {
     health += damage;
     print('$name이가 방어태세를 취하여 $damage만큼 체력을 얻었습니다.');
   }
-
-  //캐릭터 상태출력메서드
-  showStatus() {
-    print('$name - 체력: $health, 공격력: $attack, 방어력$defense');
-  }
 }
 
 //Monster클래스
@@ -176,11 +176,6 @@ class Monster extends Unit {
     character.health -= thisAttack;
     print('$name이가 ${character.name}에게 $thisAttack의 데미지를 입혔습니다.');
     return thisAttack;
-  }
-
-  //몬스터 상태를출력하는 메서드
-  showStatus() {
-    print('$name - 체력: $health, 공격력: $attack, 방어력$defense');
   }
 }
 
