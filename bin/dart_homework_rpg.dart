@@ -59,16 +59,20 @@ class Game {
   //게임시작 메서드
   int startGame() {
     while (true) {
+      //전투진행 메서드 출력
       battle();
+      //전투 1회 진행 후 확인
       if (character.health <= 0) {
-        //결과값1: 캐릭터 체력이 0이하일때
+        //결과값 1: 캐릭터 체력이 0이하일때
         return 1;
       } else if (monsters.isEmpty) {
-        //몬스터리스트가 비어있을때
+        //결과값 3: 몬스터리스트가 비어있을때
         return 3;
       }
+      //↑↑ 위 사항 둘 다 아닐경우 재대결
       print('다음 몬스터와 대결하시겠습니까? (y/n)');
       String inputAsk = stdin.readLineSync() ?? 'n';
+      //결과값2: 몬스터와 재대결 n을 선택할 경우
       if (inputAsk == 'n') {
         return 2;
       }
@@ -77,11 +81,11 @@ class Game {
 
   //전투진행 메서드
   void battle() {
-    //전투진행메서드: 게임시작
+    //전투진행메서드: 게임시작 & 캐릭터 상태 출력
     print('===================================');
     print('게임을 시작합니다!');
     character.showStatus();
-    //전투진행메서드: 몬스터불러오기
+    //전투진행메서드: 몬스터불러오기 메서트 호출 후 thisMonster객체에 전달 & 몬스터 상태 출력
     Monster thisturnMonster = getRandomMonster();
     print('===================================');
     print('새로운 몬스터가 나타났습니다!');
@@ -90,34 +94,42 @@ class Game {
     );
     //몬스터가 입힐 데미지 값
     int? damage;
-    //전투진행메서드: 턴 시작
+    //전투진행메서드: 캐릭터의 턴
     while (true) {
       print('===================================');
       print('${character.name}의 턴');
       print('행동을 선택하세요 (1: 공격, 2: 방어)');
       String inputBattle = stdin.readLineSync() ?? '1';
+      //공격을 선택했을 경우
       if (inputBattle == '1') {
-        //공격
+        //캐릭터의 attackMonster 호출
         character.attackMonster(thisturnMonster);
+      //방어를 선택했을 경우
       } else if (inputBattle == '2') {
-        //방어
+        //캐릭터의 defend 호출 & 캐릭터 상태 출력
         character.defend(damage ?? 0);
         character.showStatus();
       } else {
+        //공격&방어 외를 선택했을 경우→턴 넘어감
         print('입력값이 올바르지 않습니다!');
       }
-      //몬스터의 턴
+      //몬스터의 턴: 몬스터의 공격메서드&상태출력 메서드 호출
       print('===================================');
       print('${thisturnMonster.name}의 턴');
       damage = thisturnMonster.attackCharacter(character);
       character.showStatus();
       thisturnMonster.showStatus();
-
+      //캐릭터와 몬스터 체력값 확인
+      //캐릭터의 체력이 0이하일경우
       if (character.health <= 0) {
+        //종료 후 게임시작메서드로 돌아감
         break;
       } else if (thisturnMonster.health <= 0) {
+        //몬스터가 체력이 0이하일경우 리스트에서 삭제
         monsters.remove(thisturnMonster);
+        //죽인 몬스터값 올리기
         killedMonsters++;
+        //종료후 게임시작메서드로 돌아감
         break;
       }
     }
@@ -152,8 +164,8 @@ class Character extends Unit {
   //캐릭터 공격메서드
   attackMonster(Monster monster) {
     Random rand = Random(); //랜덤함수
-    var thisAttack = rand.nextInt(attack);
-    monster.health -= thisAttack;
+    var thisAttack = rand.nextInt(attack); //랜덤한 공격력 추출
+    monster.health -= thisAttack; //파라미터로 들어온 몬스터의 체력에서 깎음
     print('$name이가 ${monster.name}에게 $thisAttack의 데미지를 입혔습니다.');
   }
 
@@ -172,9 +184,10 @@ class Monster extends Unit {
   //몬스터 공격 메서드
   int attackCharacter(Character character) {
     Random rand = Random(); //랜덤함수
-    var thisAttack = rand.nextInt(attack);
-    character.health -= thisAttack;
+    var thisAttack = rand.nextInt(attack);//랜덤한 공격력 추출
+    character.health -= thisAttack;//파라미터로 들어온 캐릭터의 체력에서 깎음
     print('$name이가 ${character.name}에게 $thisAttack의 데미지를 입혔습니다.');
+    //랜덤한 공격력을 리턴함
     return thisAttack;
   }
 }
@@ -186,12 +199,10 @@ Character loadCharacterStats(String name) {
     final contents = file.readAsStringSync();
     final stats = contents.split(',');
     if (stats.length != 3) throw FormatException('Invalid character data');
-
     int health = int.parse(stats[0]);
     int attack = int.parse(stats[1]);
     int defense = int.parse(stats[2]);
-
-    //String name = getCharacterName();
+    //캐릭터 객체를 리턴
     return Character(name, health, attack, defense);
   } catch (e) {
     print('캐릭터 데이터를 불러오는 데 실패했습니다: $e');
@@ -218,7 +229,7 @@ List<Monster> loadMonsterStats() {
       attack = int.parse(mon[2]);
       loadMonster.add(Monster(name, health, attack));
     }
-
+    //몬스터 클래스를 데이터값으로 가진 리스트를 리턴
     return loadMonster;
   } catch (e) {
     print('몬스터 데이터를 불러오는 데 실패했습니다: $e');
