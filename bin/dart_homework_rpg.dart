@@ -10,7 +10,8 @@ void main() {
 
   print('캐릭터의 이름을 입력하세요!');
   //이름: 입력받기
-  String inputName = stdin.readLineSync(encoding: Encoding.getByName('utf-8')!) ?? '이름없음';
+  String inputName =
+      stdin.readLineSync(encoding: Encoding.getByName('utf-8')!) ?? '이름없음';
   //이름: 정규표현식 검사
   RegExp nameReg = RegExp(r'^[a-zA-Z가-힣]+$');
   if (nameReg.hasMatch(inputName)) {
@@ -39,9 +40,9 @@ void main() {
     }
     file.writeAsStringSync(
       '캐릭터의 이름: ${game.character.name}, 남은체력:${game.character.health}, 게임 결과: $winOrLose \n',
-      mode: FileMode.append,       // 기존 내용 뒤에 추가
-      encoding: utf8,              // 인코딩 (기본값은 utf8)
-      flush: true                  // 디스크에 즉시 기록할지 여부 (기본값 false)
+      mode: FileMode.append, // 기존 내용 뒤에 추가
+      encoding: utf8, // 인코딩 (기본값은 utf8)
+      flush: true, // 디스크에 즉시 기록할지 여부 (기본값 false)
     );
   } else {
     print('이름에는 한글, 영문 대소문자만 사용할 수 있습니다.');
@@ -129,13 +130,19 @@ class Game {
   }
 }
 
-//Character클래스
-class Character {
+//추상화클래스 틀
+abstract class Unit {
   String name;
   int health;
   int attack;
   int defense;
-  Character(this.name, this.health, this.attack, this.defense);
+  Unit(this.name, this.health, this.attack, this.defense);
+}
+
+//Character클래스
+class Character extends Unit {
+  //Character(String name, int health, int attack, int defense) : super(name, health, attack, defense);
+  Character(super.name, super.health, super.attack, super.defense);
 
   //캐릭터 공격메서드
   attackMonster(Monster monster) {
@@ -158,12 +165,9 @@ class Character {
 }
 
 //Monster클래스
-class Monster {
-  String name;
-  int health;
-  int attack;
-  int defense;
-  Monster(this.name, this.health, this.attack) : defense = 0;
+class Monster extends Unit {
+  Monster(String name, int health, int attack)
+    : super(name, health, attack, 0); // defense는 0으로 고정
 
   //몬스터 공격 메서드
   int attackCharacter(Character character) {
