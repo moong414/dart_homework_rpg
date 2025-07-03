@@ -4,7 +4,6 @@ import 'monster.dart';
 
 //Character클래스
 class Character extends Unit {
-  //Character(String name, int health, int attack, int defense) : super(name, health, attack, defense);
   Character(super.name, super.health, super.attack, super.defense);
   //무기 아이템사용여부변수
   bool usedItem = true;
@@ -26,7 +25,7 @@ class Character extends Unit {
 
   //캐릭터 방어메서드
   defend(int damage) {
-    health += damage;
+    health += damage; //데미지 입은만큼 체력에 더하기
     print('	🛡️ $name(이/가) 방어태세를 취하여 $damage만큼 체력을 얻었습니다. 🛡️');
   }
 }

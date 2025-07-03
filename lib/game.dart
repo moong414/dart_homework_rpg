@@ -52,7 +52,7 @@ class Game {
       print('💪 보너스 체력을 얻었습니다! 현재 체력: ${character.health} 💪');
     }
     character.showStatus();
-    //몬스터불러오기 메서트 호출 후 thisMonster객체에 전달 & 몬스터 상태 출력
+    //몬스터불러오기 메서드 호출 후 thisMonster객체에 전달 & 몬스터 상태 출력
     Monster thisturnMonster = getRandomMonster();
     print('==========================================================================');
     print('😈새로운 몬스터가 나타났습니다!😈');
@@ -89,17 +89,21 @@ class Game {
         if(character.usedItem){
           character.attack *= 2;
           print('	🔫 ${character.name}(이/가) 무기 아이템을 사용하였습니다. 공격력이 2배가 됩니다. 현재공격력: ${character.attack} 🔫');
+          //무기사용-사용함으로 처리
           character.usedItem = false;
         }else{
           print('이미 아이템을 사용하셨습니다!');
         }
+        //무기사용과 동시에 공격
         character.attackMonster(thisturnMonster);
+        //무기1번 사용 후 공격력 원상복구
         character.attack = originAttack;
       } else if (inputBattle == '4') {
         //독 아이템 사용
         if(character.usedPoison){
           thisPoison = rand.nextInt(5) + 1; 
           print('🧪 ${character.name}(이/가) 독 아이템을 사용하였습니다. 몬스터가 독에 걸렸습니다!! 🧪');
+          //독 사용-사용함으로 처리
           character.usedPoison = false;
         }else{
           print('이미 아이템을 사용하셨습니다!');
@@ -119,17 +123,19 @@ class Game {
       print('${thisturnMonster.name}의 턴');
       //몬스터의 방어력증가 처리
       monDefCounter++;
+      //카운터가 3의 배수이면 2씩 증가
       if(monDefCounter % 3 == 0){
         thisturnMonster.defense += 2;
         print('🛡️ ${thisturnMonster.name}의 방어력이 증가했습니다! 현재 방어력: ${thisturnMonster.defense} 🛡️');
+        //카운터0으로 원상복구
         monDefCounter = 0;
       }
-      //몬스터 데미지 메서드/상태메서드 호출
+      //몬스터 공격 메서드
       damage = thisturnMonster.attackCharacter(character);
       print('--------------------------------------------------------------------------');
+      //캐릭터와 몬스터 체력값 확인
       character.showStatus();
       thisturnMonster.showStatus();
-      //캐릭터와 몬스터 체력값 확인
       //캐릭터의 체력이 0이하일경우
       if (character.health <= 0) {
         //종료 후 게임시작메서드로 돌아감

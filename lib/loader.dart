@@ -30,14 +30,14 @@ List<Monster> loadMonsterStats() {
     String name;
     int health;
     int attack;
-    List<Monster> loadMonster = [];
+    List<Monster> loadMonster = []; //몬스터들 리스트 만들기
     //나눈값을 리스트로 만들기
     for (var line in lines) {
-      var mon = line.split(',');
-      name = mon[0];
-      health = int.parse(mon[1]);
-      attack = int.parse(mon[2]);
-      loadMonster.add(Monster(name, health, attack));
+      var mon = line.split(','); //한줄씩 나눈값을 ,을 기준으로 다시 나누기
+      name = mon[0]; //맨처음을 이름변수에
+      health = int.parse(mon[1]); //두번째를 체력변수에
+      attack = int.parse(mon[2]); //세번째를 공격력변수에
+      loadMonster.add(Monster(name, health, attack)); //몬스터들 리스트에 넣기
     }
     //몬스터 클래스를 데이터값으로 가진 리스트를 리턴
     return loadMonster;
