@@ -10,7 +10,7 @@ void main() {
   Game game = Game(monsters, killedMonsters);
   File file = File('data/result.txt');
 
-  print('캐릭터의 이름을 입력하세요!');
+  print('🧝 캐릭터의 이름을 입력하세요! 🧝');
   //이름: 입력받기
   String inputName = stdin.readLineSync(encoding: Encoding.getByName('utf-8')!) ?? '이름없음';
   //이름: 정규표현식 검사
@@ -27,24 +27,24 @@ void main() {
     switch (gameResult) {
       //결과값1: 캐릭터체력이 0 이하였을때 처리
       case 1:
-        print('캐릭터의 체력이 0이 되었습니다. 게임을 종료합니다.');
+        print('💀 캐릭터의 체력이 0이 되었습니다. 게임을 종료합니다. 💀');
         winOrLose = '패';
         break;
       //결과값2: 게임 종료 처리
       case 2:
-        print('게임을 종료합니다.');
+        print('🏳️ 게임을 종료합니다. 🏳️');
         winOrLose = '기권';
         break;
       //결과값2: 몬스터를 전부 물리쳤을때 처리
       case 3:
         print(r'''
           ╔═══════════════════════════════╗
-          ║ 🎉 게임에서 승리하셨습니다! 🎉 ║
+          ║ 🎉 게임에서 승리하셨습니다! 🎉║
           ╚═══════════════════════════════╝
                     ＼(＾▽＾)／
           ''');
 
-        print(' 게임을 종료합니다.');
+        print('🏆 게임을 종료합니다. 🏆');
         winOrLose = '승';
         break;
     }

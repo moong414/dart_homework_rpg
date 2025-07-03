@@ -16,7 +16,7 @@ class Monster extends Unit {
       thisAttack = 0; //캐릭터의 방어력을 뺀 값이 0이하면 0으로 만들기
     }
     character.health -= thisAttack; //파라미터로 들어온 캐릭터의 체력에서 깎음
-    print('$name이가 ${character.name}에게 $thisAttack의 데미지를 입혔습니다.');
+    print('⚔️ $name(이/가) ${character.name}에게 $thisAttack의 데미지를 입혔습니다. ⚔️');
     //랜덤한 공격력을 리턴함
     return thisAttack;
   }
