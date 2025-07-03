@@ -94,16 +94,17 @@ class Game {
       print('보너스 체력을 얻었습니다! 현재 체력: ${character.health}');
     }
     character.showStatus();
-    //전투진행메서드: 몬스터불러오기 메서트 호출 후 thisMonster객체에 전달 & 몬스터 상태 출력
+    //몬스터불러오기 메서트 호출 후 thisMonster객체에 전달 & 몬스터 상태 출력
     Monster thisturnMonster = getRandomMonster();
     print('===================================');
     print('새로운 몬스터가 나타났습니다!');
     print(
       '${thisturnMonster.name} - 체력: ${thisturnMonster.health}, 공격력: ${thisturnMonster.attack}',
     );
-    //몬스터가 입힐 데미지 값
+    //몬스터가 입힐 데미지 변수
     int? damage;
-    
+    //몬스터 방어력 증가 확인 카운터
+    int monDefCounter = 0;
     //전투진행메서드: 캐릭터의 턴
     while (true) {
       //캐릭터의 초기 공격력
@@ -135,17 +136,17 @@ class Game {
         //공격&방어 외를 선택했을 경우→턴 넘어감
         print('입력값이 올바르지 않습니다!');
       }
-      //몬스터의 턴: 몬스터의 공격메서드&상태출력 메서드 호출
+      //몬스터의 턴==============================
       print('===================================');
       print('${thisturnMonster.name}의 턴');
-      //몬스터의 방어력용 카운터
-      int monDefenseCounter = 0;
-      monDefenseCounter++;
-      if(monDefenseCounter % 3 == 0){
+      //몬스터의 방어력증가 처리
+      monDefCounter++;
+      if(monDefCounter % 3 == 0){
         thisturnMonster.defense += 2;
         print('${thisturnMonster.name}의 방어력이 증가했습니다! 현재 방어력: ${thisturnMonster.defense}');
-        monDefenseCounter = 0;
+        monDefCounter = 0;
       }
+      //몬스터 데미지 메서드/상태메서드 호출
       damage = thisturnMonster.attackCharacter(character);
       character.showStatus();
       thisturnMonster.showStatus();
@@ -196,6 +197,14 @@ class Character extends Unit {
   attackMonster(Monster monster) {
     Random rand = Random(); //랜덤함수
     var thisAttack = rand.nextInt(attack); //랜덤한 공격력 추출
+    
+    print('현재공격: $thisAttack, 현재몬스터의 방어력: ${monster.defense}');
+
+    thisAttack -= monster.defense; //공격력에서 캐릭터의 방어력을 뺌
+    if (thisAttack <= 0) {
+      thisAttack = 0; //캐릭터의 방어력을 뺀 값이 0이하면 0으로 만들기
+    }
+    
     monster.health -= thisAttack; //파라미터로 들어온 몬스터의 체력에서 깎음
     print('$name이가 ${monster.name}에게 $thisAttack의 데미지를 입혔습니다.');
   }
@@ -218,16 +227,20 @@ class Monster extends Unit {
     Random rand = Random(); //랜덤함수
     var thisAttack = rand.nextInt(attack); //랜덤한 공격력 추출
 
+    print('현재공격: $thisAttack, 현재캐릭터의 방어력: ${character.defense}');
     thisAttack -= character.defense; //공격력에서 캐릭터의 방어력을 뺌
     if (thisAttack <= 0) {
       thisAttack = 0; //캐릭터의 방어력을 뺀 값이 0이하면 0으로 만들기
     }
+
+    
 
     character.health -= thisAttack; //파라미터로 들어온 캐릭터의 체력에서 깎음
     print('$name이가 ${character.name}에게 $thisAttack의 데미지를 입혔습니다.');
     //랜덤한 공격력을 리턴함
     return thisAttack;
   }
+
 }
 
 //캐릭터 스탯불러오기
