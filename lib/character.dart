@@ -6,8 +6,10 @@ import 'monster.dart';
 class Character extends Unit {
   //Character(String name, int health, int attack, int defense) : super(name, health, attack, defense);
   Character(super.name, super.health, super.attack, super.defense);
-  //아이템사용여부변수
+  //무기 아이템사용여부변수
   bool usedItem = true;
+  //독 아이템 사용 여부 변수
+  bool usedPoison = true;
 
   //캐릭터 공격메서드
   attackMonster(Monster monster) {
@@ -20,6 +22,7 @@ class Character extends Unit {
     monster.health -= thisAttack; //파라미터로 들어온 몬스터의 체력에서 깎음
     print('$name이가 ${monster.name}에게 $thisAttack의 데미지를 입혔습니다.');
   }
+
 
   //캐릭터 방어메서드
   defend(int damage) {

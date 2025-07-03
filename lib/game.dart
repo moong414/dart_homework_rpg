@@ -24,19 +24,23 @@ class Game {
         return 3;
       }
       //↑↑ 위 사항 둘 다 아닐경우 재대결
+      print('==========================================================================');
+      print('${character.name}이 몬스터와의 대결에서 승리했습니다!');
       print('다음 몬스터와 대결하시겠습니까? (y/n)');
       String inputAsk = stdin.readLineSync() ?? 'n';
       //결과값2: 몬스터와 재대결 n을 선택할 경우
       if (inputAsk == 'n') {
         return 2;
       }
+      //독아이템사용-안함으로 변경
+      character.usedPoison = true;
     }
   }
 
   //전투진행 메서드
   void battle() {
     //전투진행메서드: 게임시작 & 캐릭터 상태 출력
-    print('===================================');
+    print('==========================================================================');
     print('게임을 시작합니다!');
     //게임시작후 보너스체력 이벤트
     Random rand = Random();
@@ -44,12 +48,13 @@ class Game {
     if (chance < 0.3) {
       //30퍼센트 확률로 이벤트 발생
       character.health += 10;
+      print('--------------------------------------------------------------------------');
       print('보너스 체력을 얻었습니다! 현재 체력: ${character.health}');
     }
     character.showStatus();
     //몬스터불러오기 메서트 호출 후 thisMonster객체에 전달 & 몬스터 상태 출력
     Monster thisturnMonster = getRandomMonster();
-    print('===================================');
+    print('==========================================================================');
     print('새로운 몬스터가 나타났습니다!');
     print(
       '${thisturnMonster.name} - 체력: ${thisturnMonster.health}, 공격력: ${thisturnMonster.attack}',
@@ -58,13 +63,17 @@ class Game {
     int? damage;
     //몬스터 방어력 증가 확인 카운터
     int monDefCounter = 0;
+    //독 아이템 공격력변수
+    int thisPoison = 0;
     //전투진행메서드: 캐릭터의 턴
     while (true) {
       //캐릭터의 초기 공격력
       int originAttack = character.attack;
-      print('===================================');
+      //캐리ㅣ터의 턴('======================================================================');
+      print('==========================================================================');
       print('${character.name}의 턴');
-      print('행동을 선택하세요 (1: 공격, 2: 방어, 3: 아이템사용)');
+      print('행동을 선택하세요 (1: 공격, 2: 방어, 3: 무기 아이템사용, 4: 독 아이템 사용)');
+      print('==========================================================================');
       String inputBattle = stdin.readLineSync() ?? '1';
       //공격을 선택했을 경우
       if (inputBattle == '1') {
@@ -76,21 +85,37 @@ class Game {
         character.defend(damage ?? 0);
         character.showStatus();
       } else if (inputBattle == '3') {
+        //무기아이템사용
         if(character.usedItem){
           character.attack *= 2;
-          print('${character.name}이 아이템을 사용하였습니다. 공격력이 2배가 됩니다. 현재공격력: ${character.attack}');
+          print('${character.name}이 무기 아이템을 사용하였습니다. 공격력이 2배가 됩니다. 현재공격력: ${character.attack}');
           character.usedItem = false;
         }else{
           print('이미 아이템을 사용하셨습니다!');
         }
         character.attackMonster(thisturnMonster);
         character.attack = originAttack;
-      } else {
+      } else if (inputBattle == '4') {
+        //독 아이템 사용
+        if(character.usedPoison){
+          thisPoison = rand.nextInt(5) + 1; 
+          print('${character.name}이 독 아이템을 사용하였습니다. 몬스터가 독에 걸렸습니다!!');
+          character.usedPoison = false;
+        }else{
+          print('이미 아이템을 사용하셨습니다!');
+        }
+      }else {
         //공격&방어 외를 선택했을 경우→턴 넘어감
         print('입력값이 올바르지 않습니다!');
       }
-      //몬스터의 턴==============================
-      print('===================================');
+      //독에 걸려있을경우
+      if(character.usedPoison == false){
+        print('--------------------------------------------------------------------------');
+        thisturnMonster.health -= thisPoison;
+        print('공격력: $thisPoison 의 독이 작용하고 있습니다! 현재 몬스터의 체력: ${thisturnMonster.health}');
+      }
+      //몬스터의 턴======================================================================
+      print('==========================================================================');
       print('${thisturnMonster.name}의 턴');
       //몬스터의 방어력증가 처리
       monDefCounter++;
@@ -101,6 +126,7 @@ class Game {
       }
       //몬스터 데미지 메서드/상태메서드 호출
       damage = thisturnMonster.attackCharacter(character);
+      print('--------------------------------------------------------------------------');
       character.showStatus();
       thisturnMonster.showStatus();
       //캐릭터와 몬스터 체력값 확인
