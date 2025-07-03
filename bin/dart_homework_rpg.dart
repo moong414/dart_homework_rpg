@@ -38,6 +38,7 @@ void main() {
         winOrLose = '승';
         break;
     }
+    //결과를 result.txt에 기록
     file.writeAsStringSync(
       '캐릭터의 이름: ${game.character.name}, 남은체력:${game.character.health}, 게임 결과: $winOrLose \n',
       mode: FileMode.append, // 기존 내용 뒤에 추가
@@ -84,6 +85,14 @@ class Game {
     //전투진행메서드: 게임시작 & 캐릭터 상태 출력
     print('===================================');
     print('게임을 시작합니다!');
+    //게임시작후 보너스체력 이벤트
+    Random rand = Random();
+    double chance = rand.nextDouble();
+    if (chance < 0.3) {
+      //30퍼센트 확률로 이벤트 발생
+      character.health += 10;
+      print('보너스 체력을 얻었습니다! 현재 체력: ${character.health}');
+    }
     character.showStatus();
     //전투진행메서드: 몬스터불러오기 메서트 호출 후 thisMonster객체에 전달 & 몬스터 상태 출력
     Monster thisturnMonster = getRandomMonster();
@@ -94,21 +103,34 @@ class Game {
     );
     //몬스터가 입힐 데미지 값
     int? damage;
+    
     //전투진행메서드: 캐릭터의 턴
     while (true) {
+      //캐릭터의 초기 공격력
+      int originAttack = character.attack;
       print('===================================');
       print('${character.name}의 턴');
-      print('행동을 선택하세요 (1: 공격, 2: 방어)');
+      print('행동을 선택하세요 (1: 공격, 2: 방어, 3: 아이템사용)');
       String inputBattle = stdin.readLineSync() ?? '1';
       //공격을 선택했을 경우
       if (inputBattle == '1') {
         //캐릭터의 attackMonster 호출
         character.attackMonster(thisturnMonster);
-      //방어를 선택했을 경우
+        //방어를 선택했을 경우
       } else if (inputBattle == '2') {
         //캐릭터의 defend 호출 & 캐릭터 상태 출력
         character.defend(damage ?? 0);
         character.showStatus();
+      } else if (inputBattle == '3') {
+        if(character.usedItem){
+          character.attack *= 2;
+          print('${character.name}이 아이템을 사용하였습니다. 공격력이 2배가 됩니다. 현재공격력: ${character.attack}');
+          character.usedItem = false;
+        }else{
+          print('이미 아이템을 사용하셨습니다!');
+        }
+        character.attackMonster(thisturnMonster);
+        character.attack = originAttack;
       } else {
         //공격&방어 외를 선택했을 경우→턴 넘어감
         print('입력값이 올바르지 않습니다!');
@@ -116,6 +138,14 @@ class Game {
       //몬스터의 턴: 몬스터의 공격메서드&상태출력 메서드 호출
       print('===================================');
       print('${thisturnMonster.name}의 턴');
+      //몬스터의 방어력용 카운터
+      int monDefenseCounter = 0;
+      monDefenseCounter++;
+      if(monDefenseCounter % 3 == 0){
+        thisturnMonster.defense += 2;
+        print('${thisturnMonster.name}의 방어력이 증가했습니다! 현재 방어력: ${thisturnMonster.defense}');
+        monDefenseCounter = 0;
+      }
       damage = thisturnMonster.attackCharacter(character);
       character.showStatus();
       thisturnMonster.showStatus();
@@ -160,7 +190,8 @@ abstract class Unit {
 class Character extends Unit {
   //Character(String name, int health, int attack, int defense) : super(name, health, attack, defense);
   Character(super.name, super.health, super.attack, super.defense);
-
+  //아이템사용여부변수
+  bool usedItem = true;
   //캐릭터 공격메서드
   attackMonster(Monster monster) {
     Random rand = Random(); //랜덤함수
@@ -174,6 +205,7 @@ class Character extends Unit {
     health += damage;
     print('$name이가 방어태세를 취하여 $damage만큼 체력을 얻었습니다.');
   }
+
 }
 
 //Monster클래스
@@ -184,8 +216,14 @@ class Monster extends Unit {
   //몬스터 공격 메서드
   int attackCharacter(Character character) {
     Random rand = Random(); //랜덤함수
-    var thisAttack = rand.nextInt(attack);//랜덤한 공격력 추출
-    character.health -= thisAttack;//파라미터로 들어온 캐릭터의 체력에서 깎음
+    var thisAttack = rand.nextInt(attack); //랜덤한 공격력 추출
+
+    thisAttack -= character.defense; //공격력에서 캐릭터의 방어력을 뺌
+    if (thisAttack <= 0) {
+      thisAttack = 0; //캐릭터의 방어력을 뺀 값이 0이하면 0으로 만들기
+    }
+
+    character.health -= thisAttack; //파라미터로 들어온 캐릭터의 체력에서 깎음
     print('$name이가 ${character.name}에게 $thisAttack의 데미지를 입혔습니다.');
     //랜덤한 공격력을 리턴함
     return thisAttack;
